@@ -12,7 +12,7 @@
 
 // Definiciones de los pines de entradas y salidas
 #define HUMIDITY_SENSOR_PIN A1
-#define PUMP_PIN 13
+#define RELAY_PIN 3
 #define DHT_PIN 2
 
 // Valores de calibracion del sensor de humedad del suelo
@@ -61,7 +61,7 @@ void setup()
 
   Serial.println(EEPROM.length());
 
-  pinMode(PUMP_PIN, OUTPUT);
+  pinMode(RELAY_PIN, OUTPUT);
 
   lcd.setBacklightPin(3, POSITIVE);
   lcd.setBacklight(HIGH);
@@ -147,20 +147,20 @@ boolean watering(boolean state)
   {
     if (soilMoisturePercent < maxHumidity)
     {
-      digitalWrite(PUMP_PIN, HIGH);
+      digitalWrite(RELAY_PIN, LOW);
       wateringMsj();
       return true;
     }
     else if (soilMoisturePercent >= maxHumidity)
     {
-      digitalWrite(PUMP_PIN, LOW);
+      digitalWrite(RELAY_PIN, HIGH);
       lcd.clear();
       return false;
     }
   }
   else
   {
-    digitalWrite(PUMP_PIN, LOW);
+    digitalWrite(RELAY_PIN, HIGH);
     return false;
   }
 }
