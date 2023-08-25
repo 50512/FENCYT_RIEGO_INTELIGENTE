@@ -60,8 +60,11 @@ void setup()
   dht.begin();
 
   Serial.println(EEPROM.length());
+  Serial.println(airValue);
+  Serial.println(waterValue);
 
   pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, HIGH);
 
   lcd.setBacklightPin(3, POSITIVE);
   lcd.setBacklight(HIGH);
@@ -154,7 +157,8 @@ boolean watering(boolean state)
     else if (soilMoisturePercent >= maxHumidity)
     {
       digitalWrite(RELAY_PIN, HIGH);
-      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("                ");
       return false;
     }
   }
