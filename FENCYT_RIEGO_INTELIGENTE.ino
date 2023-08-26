@@ -25,8 +25,11 @@ int soilMoisturePercent;
 int temperature;
 int humidity;
 
-int minHumidity = 60;
-int maxHumidity = 80;
+int minHumidity = EEPROM.get(8, minHumidity);
+// Valor de limite minimo de humedad en suelo (Su valor se guarda en 8)
+
+int maxHumidity = EEPROM.get(12, maxHumidity);
+// Valor de limite maximo de humedad en suelo (Su valor se guarda en 12)
 
 int preSoilMoisturePercent;
 int preTemperature;
@@ -44,7 +47,7 @@ byte celsiusGrades[] = {
     B00100,
     B00111};
 
-DHT dht(DHT_PIN, DHT11);
+DHT dht(DHT_PIN, DHT22);
 
 LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7);
 
@@ -62,6 +65,8 @@ void setup()
   Serial.println(EEPROM.length());
   Serial.println(airValue);
   Serial.println(waterValue);
+  Serial.println(minHumidity);
+  Serial.println(maxHumidity);
 
   pinMode(RELAY_PIN, OUTPUT);
   digitalWrite(RELAY_PIN, HIGH);
