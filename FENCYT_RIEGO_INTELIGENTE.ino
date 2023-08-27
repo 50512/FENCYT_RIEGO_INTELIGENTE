@@ -15,7 +15,7 @@
 #define RELAY_PIN 3
 #define DHT_PIN 2
 
-// Valores de calibracion del sensor de humedad del suelo
+// Valores de calibración del sensor de humedad del suelo
 int airValue = EEPROM.get(0, airValue);     // Valor que da el sensor de humedad del suelo en el aire (Su valor se guarda en 0)
 int waterValue = EEPROM.get(4, waterValue); // Valor que da el sensor de humedad del suelo en el agua (Su valor se guarda en 4)
 
@@ -26,10 +26,10 @@ int temperature;
 int humidity;
 
 int minHumidity = EEPROM.get(8, minHumidity);
-// Valor de limite minimo de humedad en suelo (Su valor se guarda en 8)
+// Valor de limite mínimo de humedad en suelo (Su valor se guarda en 8)
 
 int maxHumidity = EEPROM.get(12, maxHumidity);
-// Valor de limite maximo de humedad en suelo (Su valor se guarda en 12)
+// Valor de limite máximo de humedad en suelo (Su valor se guarda en 12)
 
 int preSoilMoisturePercent;
 int preTemperature;
@@ -53,7 +53,7 @@ LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7);
 
 /**
  * Se encarga de ejecutar una sola
- * vez todo el codigo encargado de
+ * vez todo el código encargado de
  * activar y preparar todo para que
  * el bucle se mantenga correctamente
  */
@@ -143,7 +143,7 @@ void debuggingSoilMoisture()
 
 /**
  * Usa el booleano de estado de riego para ver si
- * se debe regar o no, en cuanto llega al maximo del
+ * se debe regar o no, en cuanto llega al máximo del
  * rango de humedad requerido detiene el riego y devuelve
  * false
  *
@@ -190,8 +190,8 @@ void wateringMsj()
 
 /**
  * Se encarga de limpiar la pantalla solo cuando
- * se reduce los digitos del numero que se muestra
- * en la pantalla para eliminar los numeros sobrantes
+ * se reduce los dígitos del numero que se muestra
+ * en la pantalla para eliminar los números sobrantes
  * que se quedan al no borrar toda la pantalla
  *
  * @param int number numero base a revisar
