@@ -97,12 +97,7 @@ void loop()
 
   showAmbientData();
 
-  if (soilMoisturePercent < minHumidity)
-  {
-    wateringState = true;
-  }
-
-  wateringState = watering(wateringState);
+  watering();
   debuggingSoilMoisture();
   delay(500);
 }
@@ -144,33 +139,37 @@ void debuggingSoilMoisture()
 /**
  * Usa el booleano de estado de riego para ver si
  * se debe regar o no, en cuanto llega al máximo del
- * rango de humedad requerido detiene el riego y devuelve
- * false
+ * rango de humedad requerido detiene el riego y establece
+ * el estado de riego en false
  *
- * @param boolean state
  */
-boolean watering(boolean state)
+void watering()
 {
-  if (state)
+  if (soilMoisturePercent < minHumidity)
+  {
+    wateringState = true;
+  }
+
+  if (wateringState)
   {
     if (soilMoisturePercent < maxHumidity)
     {
       digitalWrite(RELAY_PIN, LOW);
       wateringMsj();
-      return true;
+      wateringState = true;
     }
     else if (soilMoisturePercent >= maxHumidity)
     {
       digitalWrite(RELAY_PIN, HIGH);
       lcd.setCursor(0, 0);
       lcd.print("                ");
-      return false;
+      wateringState = false;
     }
   }
   else
   {
     digitalWrite(RELAY_PIN, HIGH);
-    return false;
+    wateringState = false;
   }
 }
 
