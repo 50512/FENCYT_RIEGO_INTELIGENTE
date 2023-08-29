@@ -11,7 +11,7 @@
 #include <EEPROM.h>
 
 // Definiciones de los pines de entradas y salidas
-#define HUMIDITY_SENSOR_PIN A1
+#define HUMIDITY_SENSOR_PIN A3
 #define RELAY_PIN 3
 #define DHT_PIN 2
 
