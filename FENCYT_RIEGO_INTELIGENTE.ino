@@ -88,6 +88,9 @@ void loop()
   soilMoistureRaw = analogRead(HUMIDITY_SENSOR_PIN);
   soilMoisturePercent = fixPercent(map(soilMoistureRaw, airValue, waterValue, 0, 100));
 
+  temperature = dht.readTemperature();
+  humidity = dht.readHumidity();
+
   preSoilMoisturePercent = condicionalClearLCDByNumberInLCD(soilMoisturePercent, preSoilMoisturePercent);
   preTemperature = condicionalClearLCDByNumberInLCD(temperature, preTemperature);
   preHumidity = condicionalClearLCDByNumberInLCD(humidity, preHumidity);
@@ -112,9 +115,6 @@ void loop()
 void showAmbientData()
 {
   lcd.setCursor(0, 0);
-
-  temperature = dht.readTemperature();
-  humidity = dht.readHumidity();
 
   lcd.print("Tmp:");
   lcd.print((int)temperature);
