@@ -235,4 +235,4 @@ Procurar conectar los componentes al pin correspondiente en el código o caso co
 - [X] ~~Agregar num-pad 4x4~~
 - [ ] Permitir calibración del sensor de humedad de suelo desde el num-pad.
 - [ ] Modificar el rango de humedad desde el num-pad.
-- [ ] Agregar posibilidad de ver el rango actual.
+- [X] Agregar posibilidad de ver el rango actual.
