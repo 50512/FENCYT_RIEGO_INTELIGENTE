@@ -4,9 +4,25 @@ PROYECTO RIEGO INTELIGENTE CON ARDUINO
 FENCYT "EUREKA" XXXIII 2023
 ---------------------------
 
+- [PROYECTO RIEGO INTELIGENTE CON ARDUINO](#proyecto-riego-inteligente-con-arduino)
+  - [FENCYT "EUREKA" XXXIII 2023](#fencyt-eureka-xxxiii-2023)
+    - [Resumen](#resumen)
+    - [Detalles de Hardware](#detalles-de-hardware)
+    - [Documentación](#documentación)
+      - [1. Importación de librerías / dependencias](#1-importación-de-librerías--dependencias)
+      - [2. Variables globales](#2-variables-globales)
+      - [3. Datos guardados en EEPROM:](#3-datos-guardados-en-eeprom)
+      - [4. Funciones o métodos:](#4-funciones-o-métodos)
+      - [5. Lanzamiento:](#5-lanzamiento)
+      - [6. Actualizaciones pendientes:](#6-actualizaciones-pendientes)
+
+
 ### Resumen
 
 El proyecto *"Riego inteligente"* es un proyecto que fue hecho para la **Feria Nacional de Ciencia y Tecnología (FENCYT) "EUREKA"**.
+
+En este repositorio se encuentra los detalles técnicos del proyecto hecho por los estudiantes del 4to Grado B del colegio:  
+**Martin de la Riva y Herrera** de la ciudad de *Lamas, Lamas, San Martin*.
 
 Este proyecto esta basado en el microcontrolador ARDUINO UNO, y todo el código esta basado en C++ ya que es el lenguaje que usa el compilador de ARDUINO para el respectivo microcontrolador.
 
@@ -25,11 +41,6 @@ Los componentes conectado al ARDUINO y sus respectivos pines a continuación:
     - **SDA: PIN A4**
 
 ![Conexiones en proto-board de los componentes](./fritzzing_schematics/schematic.png "Conexiones en proto-board")
-
-### Contenido del repositorio
-
-En este repositorio se encuentra los detalles técnicos del proyecto hecho por los estudiantes del 4to Grado B del colegio:  
-**Martin de la Riva y Herrera** de la ciudad de *Lamas, Lamas, San Martin*.
 
 ### Documentación
 
