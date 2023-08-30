@@ -236,8 +236,8 @@ void showHumidityRange()
   digitalWrite(RELAY_PIN, HIGH);
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("MINIMO    MAXIMO");
-  lcd.setCursor(1, 1);
+  lcd.print("MINIMO:  MAXIMO:");
+  lcd.setCursor(2, 1);
   lcd.print((int)minHumidity);
   lcd.print("%");
   lcd.setCursor(11, 1);
@@ -245,7 +245,6 @@ void showHumidityRange()
   lcd.print("%");
   delay(5000);
   lcd.clear();
-
 }
 
 /**
