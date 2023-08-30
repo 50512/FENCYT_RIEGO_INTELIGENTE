@@ -24,6 +24,8 @@ Los componentes conectado al ARDUINO y sus respectivos pines a continuación:
     - **SCL: PIN A5**
     - **SDA: PIN A4**
 
+![Conexiones en proto-board de los componentes](./fritzzing_schematics/schematic.png "Conexiones en proto-board")
+
 ### Contenido del repositorio
 
 En este repositorio se encuentra los detalles técnicos del proyecto hecho por los estudiantes del 4to Grado B del colegio:  
