@@ -43,9 +43,9 @@ Los componentes conectado al ARDUINO y sus respectivos pines a continuación:
     - **SCL: PIN A5**
     - **SDA: PIN A4**
 
-![Conexiones en proto-board de los componentes](./fritzzing_schematics/schematic.png "Conexiones en proto-board")
+![Conexiones en proto-board de los componentes](./fritzing_schematics/schematic.png "Conexiones en proto-board")
 
-Se puede ver mas detalles de los esquemáticos usando el programa FRITZZING para ver los archivos del fichero `fritzzing_schematics`
+Se puede ver mas detalles de los esquemáticos usando el programa FRITZING para ver los archivos del fichero `fritzing_schematics`
 
 ### Documentación
 
@@ -71,6 +71,11 @@ Estas se consideran dependencias del programa, por lo cual sin estas librerías 
 
     // Biblioteca para modificar y leer la memoria EEPROM
     #include <EEPROM.h>
+
+> Permite simplificar el uso del keypad
+
+    // Biblioteca para control sencillo del numpad 4x4
+    #include <Keypad.h>
 
 #### 2. Variables globales
 
@@ -133,6 +138,31 @@ En esta sección del código se inicializan u obtienen las variables globales ne
     B00100,
     B00111};
 
+> Constantes del número de filas y columnas que tiene el numpad
+
+    // Número de filas y columnas del numpad
+    const byte ROWS = 4;
+    const byte COLUMNS = 4;
+
+> Arreglo de las teclas del numpad
+
+    // Teclas del numpad
+    char keys[ROWS][COLUMNS] = {
+        {'1', '2', '3', 'A'},
+        {'4', '5', '6', 'B'},
+        {'7', '8', '9', 'C'},
+        {'*', '0', '#', 'D'}};
+
+> Pines del numpad para las filas y las columnas
+
+    // Pines del numpad
+    byte rowPins[ROWS] = {11, 10, 9, 8};
+    byte columnPins[COLUMNS] = {7, 6, 5, 4};
+
+> Inicializador para el keypad 4x4
+
+    Keypad numpad = Keypad(makeKeymap(keys), rowPins, columnPins, ROWS, COLUMNS);
+
 > Inicializador para el sensor DHT-22
 
     DHT dht(DHT_PIN, DHT22);
@@ -181,10 +211,16 @@ Cuando se complete el riego apagara el relé y se situara el estado de riego en 
 6. `void wateringMsj()`  
 Muestra en pantalla el mensaje de que se esta rengando en ese momento y la humedad del suelo actual.
 
-7. `int condicionalClearLCDByNumberInLCD(int number, int preNumber)`  
+7. `void optionSelector()`  
+A cada ciclo del `loop()` se encarga de verificar si en ese momento se esta presionando una tecla del teclado, y de ser ese el caso, ver si la tecla esta configurada para alguna opción del sistema.
+
+8. `void showHumidityRange()`  
+
+
+9.  `int condicionalClearLCDByNumberInLCD(int number, int preNumber)`  
 Recibe como entrada el valor actual de la variable y su valor anterior, los compara entre si para verificar si se redujo la cantidad de caracteres de los valores mostrados, de ser el caso, borrara la pantalla para evitar dejar caracteres fantasmas.
 
-8. `int fixPercent(int toFix)`  
+1.  `int fixPercent(int toFix)`  
 Recibe de entrada un número porcentual que debe ser verificado para que no salga de los limites de 0% - 100%, y regresa el número ya corregido
 
 #### 5. Lanzamiento:
@@ -195,7 +231,7 @@ Procurar conectar los componentes al pin correspondiente en el código o caso co
 
 #### 6. Actualizaciones pendientes:
 
-- [ ] Agregar num-pad 4x4
+- [X] ~~Agregar num-pad 4x4~~
 - [ ] Permitir calibración del sensor de humedad de suelo desde el num-pad.
 - [ ] Modificar el rango de humedad desde el num-pad.
 - [ ] Agregar posibilidad de ver el rango actual.

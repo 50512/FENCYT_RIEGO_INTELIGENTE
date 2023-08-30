@@ -10,6 +10,9 @@
 // Biblioteca para modificar y leer la memoria EEPROM
 #include <EEPROM.h>
 
+// Biblioteca para control sencillo del numpad 4x4
+#include <Keypad.h>
+
 // Definiciones de los pines de entradas y salidas
 #define HUMIDITY_SENSOR_PIN A3
 #define RELAY_PIN 3
@@ -46,6 +49,23 @@ byte celsiusGrades[] = {
     B00100,
     B00100,
     B00111};
+
+// Número de filas y columnas del numpad
+const byte ROWS = 4;
+const byte COLUMNS = 4;
+
+// Teclas del numpad
+char keys[ROWS][COLUMNS] = {
+    {'1', '2', '3', 'A'},
+    {'4', '5', '6', 'B'},
+    {'7', '8', '9', 'C'},
+    {'*', '0', '#', 'D'}};
+
+// Pines del numpad
+byte rowPins[ROWS] = {11, 10, 9, 8};
+byte columnPins[COLUMNS] = {7, 6, 5, 4};
+
+Keypad numpad = Keypad(makeKeymap(keys), rowPins, columnPins, ROWS, COLUMNS);
 
 DHT dht(DHT_PIN, DHT22);
 
@@ -96,6 +116,7 @@ void loop()
   preHumidity = condicionalClearLCDByNumberInLCD(humidity, preHumidity);
 
   showAmbientData();
+  optionSelector();
 
   watering();
   debuggingSoilMoisture();
@@ -184,6 +205,45 @@ void wateringMsj()
   lcd.setCursor(0, 1);
   lcd.print("Humedad:");
   lcd.print((int)soilMoisturePercent);
+  lcd.print("%");
+}
+
+/**
+ * Se encarga de verificar si hay o no una
+ * tecla siendo presionada y si esta equivale
+ * a alguna opción existente
+ */
+void optionSelector()
+{
+  char key = numpad.getKey();
+  switch (key)
+  {
+  case 'A':
+    digitalWrite(RELAY_PIN, HIGH);
+    showHumidityRange();
+    delay(5000);
+    lcd.clear();
+    break;
+
+  default:
+    break;
+  }
+}
+
+/**
+ * Muestra el rango de humedad actual
+ * al que esta configurado el sistema
+ */
+void showHumidityRange()
+{
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("MINIMO    MAXIMO");
+  lcd.setCursor(1, 1);
+  lcd.print((int)minHumidity);
+  lcd.print("%");
+  lcd.setCursor(11, 1);
+  lcd.print((int)maxHumidity);
   lcd.print("%");
 }
 
