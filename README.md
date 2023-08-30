@@ -45,6 +45,8 @@ Los componentes conectado al ARDUINO y sus respectivos pines a continuación:
 
 ![Conexiones en proto-board de los componentes](./fritzzing_schematics/schematic.png "Conexiones en proto-board")
 
+Se puede ver mas detalles de los esquemáticos usando el programa FRITZZING para ver los archivos del fichero `fritzzing_schematics`
+
 ### Documentación
 
 #### 1. Importación de librerías / dependencias
