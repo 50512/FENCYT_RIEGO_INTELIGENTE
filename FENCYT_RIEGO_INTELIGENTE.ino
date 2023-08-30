@@ -219,10 +219,7 @@ void optionSelector()
   switch (key)
   {
   case 'A':
-    digitalWrite(RELAY_PIN, HIGH);
     showHumidityRange();
-    delay(5000);
-    lcd.clear();
     break;
 
   default:
@@ -236,6 +233,7 @@ void optionSelector()
  */
 void showHumidityRange()
 {
+  digitalWrite(RELAY_PIN, HIGH);
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("MINIMO    MAXIMO");
@@ -245,6 +243,9 @@ void showHumidityRange()
   lcd.setCursor(11, 1);
   lcd.print((int)maxHumidity);
   lcd.print("%");
+  delay(5000);
+  lcd.clear();
+
 }
 
 /**
