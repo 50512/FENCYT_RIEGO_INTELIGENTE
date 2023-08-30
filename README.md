@@ -189,7 +189,7 @@ Recibe de entrada un número porcentual que debe ser verificado para que no salg
 
 Para lanzar este programa solo tienes que tener el IDE de ARDUINO y las bibliotecas referenciadas en el punto 1, conectar el ARDUINO UNO al equipo, compilar el programa y cargarlo al ARDUINO.
 
-Procurar conectar los componentes al pin correspondiente en el código o caso contrario reemplazar el `#define` dentro del código por el pin que este usando.
+Procurar conectar los componentes al pin correspondiente en el código o, caso contrario, reemplazar el `#define` dentro del código por el pin que este usando.
 
 #### 6. Actualizaciones pendientes:
 
