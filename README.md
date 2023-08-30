@@ -215,6 +215,7 @@ Muestra en pantalla el mensaje de que se esta rengando en ese momento y la humed
 A cada ciclo del `loop()` se encarga de verificar si en ese momento se esta presionando una tecla del teclado, y de ser ese el caso, ver si la tecla esta configurada para alguna opción del sistema.
 
 8. `void showHumidityRange()`  
+Desactiva el relé y muestra la información del rango actual de humedad, después de 5 segundos regresa a su estado normal, reactivando el relé.
 
 
 9.  `int condicionalClearLCDByNumberInLCD(int number, int preNumber)`  
