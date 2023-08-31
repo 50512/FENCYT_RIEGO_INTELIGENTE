@@ -16,8 +16,9 @@ FENCYT "EUREKA" XXXIII 2023
       - [2. Variables globales](#2-variables-globales)
       - [3. Datos guardados en EEPROM:](#3-datos-guardados-en-eeprom)
       - [4. Funciones o métodos:](#4-funciones-o-métodos)
-      - [5. Lanzamiento:](#5-lanzamiento)
-      - [6. Actualizaciones pendientes:](#6-actualizaciones-pendientes)
+      - [5. Comandos del numpad:](#5-comandos-del-numpad)
+      - [6. Lanzamiento:](#6-lanzamiento)
+      - [7. Actualizaciones pendientes:](#7-actualizaciones-pendientes)
 
 
 ### Resumen
@@ -42,6 +43,9 @@ Los componentes conectado al ARDUINO y sus respectivos pines a continuación:
 - PANTALLA LCD I2C 16X2:
     - **SCL: PIN A5**
     - **SDA: PIN A4**
+- TECLADO NUMÉRICO **NUMPAD 4x4**:
+  - **FILAS: PINES 11, 10, 9, 8**
+  - **COLUMNAS: PINES 7, 6, 5, 4** 
 
 ![Conexiones en proto-board de los componentes](./fritzing_schematics/schematic.png "Conexiones en proto-board")
 
@@ -129,14 +133,28 @@ En esta sección del código se inicializan u obtienen las variables globales ne
 > ![Carácter personalizado de grados Celsius en pantalla LCD](./assets/CelsiusCharacter.png "Grados Celsius")
 
     byte celsiusGrades[] = {
-    B11100,
-    B10100,
-    B11100,
-    B00000,
-    B00111,
-    B00100,
-    B00100,
-    B00111};
+        B11100,
+        B10100,
+        B11100,
+        B00000,
+        B00111,
+        B00100,
+        B00100,
+        B00111};
+
+> Carácter personalizado de una cara sonriente para la bienvenida al programa.
+>
+> ![Carácter personalizado de cara sonriente](./assets/welcomeFace.png "Cara de bienvenida")
+
+    byte welcomeFace[] = {
+        B00000,
+        B01010,
+        B01010,
+        B01010,
+        B00000,
+        B10001,
+        B01110,
+        B00000};
 
 > Constantes del número de filas y columnas que tiene el numpad
 
@@ -184,55 +202,87 @@ Este programa usa la memoria EEPROM integrada en el ARDUINO UNO para almacenar l
 Vamos a señalar cada función o método del código con una pequeña descripción de lo que hace cada uno:
 
 1. `void setup()`  
-En esta función se inicializa el monitor serial a 9600 baudios.  
 Se inicializa el sensor DHT-22  
 Se inicializa el pin del relé en `OUTPUT MODE` y se desactiva el relé.  
-Se inicializa la pantalla LCD y se agrega el carácter de grados Celsius a su memoria.
+Se inicializa la pantalla LCD y se agrega el carácter de grados Celsius y la cara sonriente a su memoria.
+Imprime la pantalla de inicio.
 
-2. `void loop()`  
+1. `void loop()`  
 El código dentro de esta función se repetirá indefinidamente debido a la estructura de ejecución del ARDUINO.  
-Esta repetición sera cada 500ms debido al `delay(500)` que esta al final de la función.  
+Esta repetición sera cada 250ms debido al `delay(500)` que esta al final de la función.  
 En esta función se llamara a otras funciones que cumplan el rol de:
     - Mostrar datos en pantalla.
     - Recolectar los datos de los sensores.
     - Verificar y comparar datos entre si.
+    - Solicitar la entrada del numpad.
     - Etc.
 
-3. `void showAmbientData()`  
+1. `void showAmbientData()`  
 Muestra en la pantalla LCD toda la información ambiental de los sensores.
 
-4. `void debuggingSoilMoisture()`   
-Imprime por puerto serie las variables `soilMoisturePercent` y `soilMoistureRaw` para permitir una depuración del sensor de humedad de suelo.
-
-5. `void watering()`  
+1. `void watering()`  
 Verifica si la humedad del suelo es inferior a `minHumidity`, que representa el mínimo de humedad del rango, de ser este el caso, encenderá el relé hasta ser igual o superior a `maxHumidity`, dejando espacio para lo que se demore en apagar la bomba que este conectado al relé y el agua que seguía recorriendo el tubo.  
 Cuando se complete el riego apagara el relé y se situara el estado de riego en `false`
 
-6. `void wateringMsj()`  
+1. `void wateringMsj()`  
 Muestra en pantalla el mensaje de que se esta rengando en ese momento y la humedad del suelo actual.
 
-7. `void optionSelector()`  
+1. `void optionSelector()`  
 A cada ciclo del `loop()` se encarga de verificar si en ese momento se esta presionando una tecla del teclado, y de ser ese el caso, ver si la tecla esta configurada para alguna opción del sistema.
 
-8. `void showHumidityRange()`  
-Desactiva el relé y muestra la información del rango actual de humedad, después de 5 segundos regresa a su estado normal, reactivando el relé.
+1. `void showHumidityRange(int msDelay)`  
+Recibe como parámetro un delay en mili-segundos.  
+Esta función desactiva el relé hasta que se termina de ejecutar, muestra el mínimo y máximo del rango de humedad con su respectiva etiqueta.  
+Esta información se mostrara durante la cantidad de mili-segundos ingresada como parámetro.
 
+1. `void setHumidityRange()`  
+Desactiva el relé, imprime el mensaje en LCD solicitando ingresar los datos para el rango de humedad.  
+Activa el bloque parpadeante para representar la espera de ingreso de datos, registra los botones numéricos presionados para guardar el número de los limites del rango, los imprime en pantalla y verificara que sea un valor valido para el porcentaje.
 
-9.  `int condicionalClearLCDByNumberInLCD(int number, int preNumber)`  
+1. `void startScreen()`  
+Imprime en pantalla el mensaje `INICIALIZANDO` y una cara sonriente.
+
+1. `int condicionalClearLCDByNumberInLCD(int number, int preNumber)`  
 Recibe como entrada el valor actual de la variable y su valor anterior, los compara entre si para verificar si se redujo la cantidad de caracteres de los valores mostrados, de ser el caso, borrara la pantalla para evitar dejar caracteres fantasmas.
 
-1.  `int fixPercent(int toFix)`  
-Recibe de entrada un número porcentual que debe ser verificado para que no salga de los limites de 0% - 100%, y regresa el número ya corregido
+1. `int fixPercent(int toFix)`  
+Recibe de entrada un número porcentual que debe ser verificado para que no salga de los limites de 0% - 100%, y regresa el número ya corregido.
 
-#### 5. Lanzamiento:
+1. `boolean percentChecker(int percentToCheck)`  
+Recibe como parámetro un valor numérico para verificar si esta dentro del rango de 0% - 100%  
+Devolverá `true` o `false` dependiendo si cumple la condición.
+
+1. `void debuggingSoilMoisture()`   
+Imprime por puerto serie las variables `soilMoisturePercent` y `soilMoistureRaw` para permitir una depuración del sensor de humedad de suelo.
+
+1. `void debuggingEEPROMData()`  
+Inicia el puerto Serial e imprime los valores de:
+    - `EEPROM.length()`
+    - `airValue`
+    - `waterValue`
+    - `minHumidity`
+    - `maxHumidity`
+
+Estos valores se imprimen para ver sus datos debido a que se guardan en la EEPROM del ARDUINO y en caso de error permitirá ver cual dato es el que falla.
+
+#### 5. Comandos del numpad:
+
+Los comandos que se pueden ejecutar actualmente son:
+- [A] Ver el rango actual de humedad del suelo || Aceptar
+- [B] Modificar el rango de humedad del suelo
+- [C] PENDIENTE || Cancelar
+- [D] PENDIENTE
+
+#### 6. Lanzamiento:
 
 Para lanzar este programa solo tienes que tener el IDE de ARDUINO y las bibliotecas referenciadas en el punto 1, conectar el ARDUINO UNO al equipo, compilar el programa y cargarlo al ARDUINO.
 
 Procurar conectar los componentes al pin correspondiente en el código o caso contrario reemplazar el `#define` dentro del código por el pin que este usando.
 
-#### 6. Actualizaciones pendientes:
+#### 7. Actualizaciones pendientes:
 
 - [X] ~~Agregar num-pad 4x4~~
-- [ ] Permitir calibración del sensor de humedad de suelo desde el num-pad.
-- [ ] Modificar el rango de humedad desde el num-pad.
 - [X] ~~Agregar posibilidad de ver el rango actual.~~
+- [ ] Modificar el rango de humedad desde el num-pad.
+- [ ] Permitir calibración del sensor de humedad de suelo desde el num-pad.
+- [ ] Permitir desactivar o activar la luz de fondo de la LCD.

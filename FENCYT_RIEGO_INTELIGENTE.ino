@@ -50,6 +50,16 @@ byte celsiusGrades[] = {
     B00100,
     B00111};
 
+byte welcomeFace[] = {
+    B00000,
+    B01010,
+    B01010,
+    B01010,
+    B00000,
+    B10001,
+    B01110,
+    B00000};
+
 // Número de filas y columnas del numpad
 const byte ROWS = 4;
 const byte COLUMNS = 4;
@@ -79,14 +89,8 @@ LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7);
  */
 void setup()
 {
-  Serial.begin(9600);
   dht.begin();
-
-  Serial.println(EEPROM.length());
-  Serial.println(airValue);
-  Serial.println(waterValue);
-  Serial.println(minHumidity);
-  Serial.println(maxHumidity);
+  // debuggingEEPROMData();
 
   pinMode(RELAY_PIN, OUTPUT);
   digitalWrite(RELAY_PIN, HIGH);
@@ -97,6 +101,9 @@ void setup()
   lcd.clear();
 
   lcd.createChar(0, celsiusGrades);
+  lcd.createChar(1, welcomeFace);
+
+  startScreen();
 }
 
 /**
@@ -115,12 +122,15 @@ void loop()
   preTemperature = condicionalClearLCDByNumberInLCD(temperature, preTemperature);
   preHumidity = condicionalClearLCDByNumberInLCD(humidity, preHumidity);
 
-  showAmbientData();
+  if (!wateringState)
+  {
+    showAmbientData();
+  }
   optionSelector();
 
   watering();
   debuggingSoilMoisture();
-  delay(500);
+  delay(250);
 }
 
 /**
@@ -146,23 +156,10 @@ void showAmbientData()
 }
 
 /**
- * Imprime en monitor serial el porcentaje y el valor
- * en raw del sensor de humedad de suelo
- */
-void debuggingSoilMoisture()
-{
-  Serial.print("Soil Moisture Percent: ");
-  Serial.print(soilMoisturePercent);
-  Serial.print("% | Soil Moisture Raw: ");
-  Serial.println(soilMoistureRaw);
-}
-
-/**
  * Usa el booleano de estado de riego para ver si
  * se debe regar o no, en cuanto llega al máximo del
  * rango de humedad requerido detiene el riego y establece
  * el estado de riego en false
- *
  */
 void watering()
 {
@@ -219,7 +216,11 @@ void optionSelector()
   switch (key)
   {
   case 'A':
-    showHumidityRange();
+    showHumidityRange(5000);
+    break;
+
+  case 'B':
+    setHumidityRange();
     break;
 
   default:
@@ -231,7 +232,7 @@ void optionSelector()
  * Muestra el rango de humedad actual
  * al que esta configurado el sistema
  */
-void showHumidityRange()
+void showHumidityRange(int msDelay)
 {
   digitalWrite(RELAY_PIN, HIGH);
   lcd.clear();
@@ -243,8 +244,73 @@ void showHumidityRange()
   lcd.setCursor(11, 1);
   lcd.print((int)maxHumidity);
   lcd.print("%");
-  delay(5000);
+  delay(msDelay);
   lcd.clear();
+}
+
+/**
+ * Se encarga de colocar los limites
+ * mínimo y máximo del rango de humedad
+ * del suelo
+ */
+void setHumidityRange()
+{
+  digitalWrite(RELAY_PIN, HIGH);
+
+  boolean successfulNewLimit = false;
+  int index = 0;
+
+  int minHumidityTemp;
+  String textMinHumidity = "";
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Humedad minima:");
+  lcd.blink();
+
+  while (!successfulNewLimit)
+  {
+    char key = numpad.getKey();
+    lcd.setCursor(index, 1);
+    if (key != NULL)
+    {
+      if (key == 'B' || key == 'D' || key == '#' || key == '*')
+      {
+        // Nothing
+      }
+      else if (key == 'A')
+      {
+        minHumidityTemp = textMinHumidity.toInt();
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print(minHumidityTemp);
+        delay(1000);
+      }
+      else if (key == 'C')
+      {
+        break;
+      }
+      else
+      {
+        lcd.print((char)key);
+        textMinHumidity += key;
+        index++;
+      }
+    }
+  }
+  lcd.noBlink();
+  lcd.clear();
+}
+
+/**
+ * Imprime en pantalla el mensaje de inicio del programa
+ */
+void startScreen()
+{
+  lcd.setCursor(0, 0);
+  lcd.print("INICIALIZANDO ");
+  lcd.write((int8_t)1);
+  delay(2500);
 }
 
 /**
@@ -307,4 +373,40 @@ int fixPercent(int toFix)
   }
 
   return fixed;
+}
+
+/**
+ * Regresa si es que el valor ingresado es
+ * un porcentaje valido o no
+ */
+boolean percentChecker(int percentToCheck)
+{
+  return (0 <= percentToCheck <= 100);
+}
+
+/**
+ * Imprime en monitor serial el porcentaje y el valor
+ * en raw del sensor de humedad de suelo
+ */
+void debuggingSoilMoisture()
+{
+  Serial.print("Soil Moisture Percent: ");
+  Serial.print(soilMoisturePercent);
+  Serial.print("% | Soil Moisture Raw: ");
+  Serial.println(soilMoistureRaw);
+}
+
+/**
+ * Inicia e imprime en puerto Serial los datos
+ * que se guardaron en la EEPROM
+ */
+void debuggingEEPROMData()
+{
+  Serial.begin(9600);
+
+  Serial.println(EEPROM.length());
+  Serial.println(airValue);
+  Serial.println(waterValue);
+  Serial.println(minHumidity);
+  Serial.println(maxHumidity);
 }
