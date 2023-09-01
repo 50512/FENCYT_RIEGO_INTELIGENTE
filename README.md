@@ -12,10 +12,10 @@ FENCYT "EUREKA" XXXIII 2023
     - [Resumen](#resumen)
     - [Detalles de Hardware](#detalles-de-hardware)
     - [Documentación](#documentación)
-      - [1. Importación de librerías / dependencias](#1-importación-de-librerías--dependencias)
+      - [1. Dependencias](#1-dependencias)
       - [2. Variables globales](#2-variables-globales)
       - [3. Datos guardados en EEPROM:](#3-datos-guardados-en-eeprom)
-      - [4. Funciones o métodos:](#4-funciones-o-métodos)
+      - [4. Funciones:](#4-funciones)
       - [5. Comandos del numpad:](#5-comandos-del-numpad)
       - [6. Lanzamiento:](#6-lanzamiento)
       - [7. Actualizaciones pendientes:](#7-actualizaciones-pendientes)
@@ -53,7 +53,7 @@ Se puede ver mas detalles de los esquemáticos usando el programa FRITZING para 
 
 ### Documentación
 
-#### 1. Importación de librerías / dependencias
+#### 1. Dependencias
 
 Desde la linea 1 a la linea 11 se importan las librerías necesarias para varias de las funciones del programa en ARDUINO.  
 Estas se consideran dependencias del programa, por lo cual sin estas librerías instaladas el programa es incapaz de compilarse.
@@ -197,7 +197,7 @@ Este programa usa la memoria EEPROM integrada en el ARDUINO UNO para almacenar l
 - Dirección 8: Limite inferior del rango de humedad para el suelo `minHumidity`
 - Dirección 12: Limite superior del rango de humedad para el suelo `maxHumidity`
 
-#### 4. Funciones o métodos:
+#### 4. Funciones:
 
 Vamos a señalar cada función o método del código con una pequeña descripción de lo que hace cada uno:
 
