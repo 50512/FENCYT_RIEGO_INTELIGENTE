@@ -39,6 +39,7 @@ int preTemperature;
 int preHumidity;
 
 boolean wateringState = false;
+boolean backlightLCD = true;
 
 byte celsiusGrades[] = {
     B11100,
@@ -223,6 +224,14 @@ void optionSelector()
     setHumidityRange();
     break;
 
+  case 'C':
+    calibrateSoilSensor();
+    break;
+
+  case 'D':
+    toggleBacklightLCD();
+    break;
+
   default:
     break;
   }
@@ -251,7 +260,9 @@ void showHumidityRange(int msDelay)
 /**
  * Se encarga de colocar los limites
  * mínimo y máximo del rango de humedad
- * del suelo
+ * del suelo, verifica cada valor ingresado
+ * para evitar errores y los guarda en la
+ * memoria EEPROM
  */
 void setHumidityRange()
 {
@@ -260,7 +271,7 @@ void setHumidityRange()
   boolean successfulNewLimit = false;
   int index = 0;
 
-  int minHumidityTemp;
+  int minHumidityTemp = -1;
   String textMinHumidity = "";
 
   lcd.clear();
@@ -281,14 +292,28 @@ void setHumidityRange()
       else if (key == 'A')
       {
         minHumidityTemp = textMinHumidity.toInt();
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print(minHumidityTemp);
-        delay(1000);
+        if (!percentChecker(minHumidityTemp))
+        {
+          invalidValueHumidityScreen();
+          lcd.print("Humedad minima:");
+          textMinHumidity = "";
+          minHumidityTemp = -1;
+          index = 0;
+        }
+        else
+        {
+          successfulNewLimit = true;
+        }
       }
       else if (key == 'C')
       {
-        break;
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("CANCELADO");
+        delay(500);
+        lcd.noBlink();
+        showHumidityRange(1500);
+        return;
       }
       else
       {
@@ -298,8 +323,252 @@ void setHumidityRange()
       }
     }
   }
-  lcd.noBlink();
+
+  successfulNewLimit = false;
+  index = 0;
+
+  int maxHumidityTemp = -1;
+  String textMaxHumidity = "";
+
   lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Humedad maxima:");
+
+  while (!successfulNewLimit)
+  {
+    char key = numpad.getKey();
+    lcd.setCursor(index, 1);
+    if (key != NULL)
+    {
+      if (key == 'B' || key == 'D' || key == '#' || key == '*')
+      {
+        // Nothing
+      }
+      else if (key == 'A')
+      {
+        maxHumidityTemp = textMaxHumidity.toInt();
+        if (!percentChecker(maxHumidityTemp))
+        {
+          invalidValueHumidityScreen();
+          lcd.print("Humedad maxima:");
+          textMaxHumidity = "";
+          maxHumidityTemp = -1;
+          index = 0;
+        }
+        else if (maxHumidityTemp <= minHumidityTemp)
+        {
+          invalidValueHumidityScreen();
+          lcd.print("MINIMO:");
+          lcd.print(minHumidityTemp);
+          delay(1000);
+          lcd.clear();
+          lcd.setCursor(0, 0);
+          lcd.print("Humedad maxima:");
+          textMaxHumidity = "";
+          maxHumidityTemp = -1;
+          index = 0;
+        }
+        else
+        {
+          successfulNewLimit = true;
+        }
+      }
+      else if (key == 'C')
+      {
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("CANCELADO");
+        delay(500);
+        break;
+      }
+      else
+      {
+        lcd.print((char)key);
+        textMaxHumidity += key;
+        index++;
+      }
+    }
+  }
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("MIN:");
+  lcd.print(minHumidityTemp);
+  lcd.print(" MAX:");
+  lcd.print(maxHumidityTemp);
+
+  lcd.setCursor(0, 1);
+  lcd.print("[A]/[C]");
+
+  while (successfulNewLimit)
+  {
+    char key = numpad.getKey();
+    if (key == 'A')
+    {
+      minHumidity = minHumidityTemp;
+      maxHumidity = maxHumidityTemp;
+
+      EEPROM.put(12, maxHumidity);
+      EEPROM.put(8, minHumidity);
+
+      break;
+    }
+    else if (key == 'C')
+    {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("CANCELADO");
+      delay(500);
+      break;
+    }
+  }
+
+  lcd.noBlink();
+
+  showHumidityRange(1500);
+
+  lcd.clear();
+}
+
+/**
+ * Muestra en la pantalla LCD el
+ * mensaje de que el valor es invalido
+ */
+void invalidValueHumidityScreen()
+{
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("INGRESE UN VALOR");
+  lcd.setCursor(0, 1);
+  lcd.print("VALIDO");
+  delay(1000);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+}
+
+/**
+ * Inicia el proceso de calibración del
+ * sensor de humedad del suelo, obtiene
+ * los valores del sensor en ambos casos
+ * luego de confirmación del usuario y
+ * los guarda en la EEPROM
+ */
+void calibrateSoilSensor()
+{
+  digitalWrite(RELAY_PIN, HIGH);
+
+  boolean successfulCalibrate = false;
+
+  int airValueTemp;
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("SENSOR DE HMD EN");
+
+  while (!successfulCalibrate)
+  {
+    airValueTemp = analogRead(HUMIDITY_SENSOR_PIN);
+    lcd.setCursor(0, 1);
+    lcd.print("AIRE:");
+    lcd.print(airValueTemp);
+    lcd.print("    ");
+    lcd.setCursor(10, 1);
+    lcd.print("[A/C]");
+
+    char key = numpad.getKey();
+    switch (key)
+    {
+    case 'A':
+      airValueTemp = airValueTemp;
+      successfulCalibrate = true;
+      break;
+
+    case 'C':
+      successfulCalibrate = true;
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("CANCELADO");
+      delay(500);
+      lcd.clear();
+      return;
+
+    default:
+      break;
+    }
+    delay(250);
+  }
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("SENSOR DE HMD EN");
+
+  int waterValueTemp;
+  successfulCalibrate = false;
+
+  while (!successfulCalibrate)
+  {
+    waterValueTemp = analogRead(HUMIDITY_SENSOR_PIN);
+    lcd.setCursor(0, 1);
+    lcd.print("AGUA:");
+    lcd.print(waterValueTemp);
+    lcd.print("    ");
+    lcd.setCursor(10, 1);
+    lcd.print("[A/C]");
+
+    char key = numpad.getKey();
+    switch (key)
+    {
+    case 'A':
+      waterValueTemp = waterValueTemp;
+      successfulCalibrate = true;
+      break;
+
+    case 'C':
+      successfulCalibrate = true;
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("CANCELADO");
+      delay(500);
+      lcd.clear();
+      return;
+
+    default:
+      break;
+    }
+    delay(250);
+  }
+
+  airValue = airValueTemp;
+  waterValue = waterValueTemp;
+
+  EEPROM.put(0, airValue);
+  EEPROM.put(4, waterValue);
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("CALIBRACION");
+  lcd.setCursor(0, 1);
+  lcd.print("COMPLETA");
+  delay(1000);
+  lcd.clear();
+}
+
+/**
+ * Cambia el estado del LED del
+ * backlight de la pantalla LCD
+ */
+void toggleBacklightLCD()
+{
+  if (backlightLCD)
+  {
+    backlightLCD = false;
+    lcd.noBacklight();
+  }
+  else
+  {
+    backlightLCD = true;
+    lcd.backlight();
+  }
 }
 
 /**
@@ -381,7 +650,7 @@ int fixPercent(int toFix)
  */
 boolean percentChecker(int percentToCheck)
 {
-  return (0 <= percentToCheck <= 100);
+  return (0 <= percentToCheck && percentToCheck <= 100);
 }
 
 /**
