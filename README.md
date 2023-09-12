@@ -44,8 +44,8 @@ Los componentes conectado al ARDUINO y sus respectivos pines a continuación:
     - **SCL: PIN A5**
     - **SDA: PIN A4**
 - TECLADO NUMÉRICO **NUMPAD 4x4**:
-  - **FILAS: PINES 11, 10, 9, 8**
-  - **COLUMNAS: PINES 7, 6, 5, 4** 
+    - **FILAS: PINES 11, 10, 9, 8**
+    - **COLUMNAS: PINES 7, 6, 5, 4** 
 
 ![Conexiones en proto-board de los componentes](./fritzing_schematics/schematic.png "Conexiones en proto-board")
 
@@ -127,6 +127,10 @@ En esta sección del código se inicializan u obtienen las variables globales ne
 > Booleano que dice si esta regando o no
 
     boolean wateringState = false;
+
+> Booleano que dice si la luz de fondo de la LCD esta encendida o no
+
+    boolean backlightLCD = true;
 
 > Carácter personalizado para representar los grados Celsius debido a que el símbolo de grados "°" no es renderizado por la pantalla LCD.  
 >
@@ -239,6 +243,15 @@ Esta información se mostrara durante la cantidad de mili-segundos ingresada com
 Desactiva el relé, imprime el mensaje en LCD solicitando ingresar los datos para el rango de humedad.  
 Activa el bloque parpadeante para representar la espera de ingreso de datos, registra los botones numéricos presionados para guardar el número de los limites del rango, los imprime en pantalla y verificara que sea un valor valido para el porcentaje.
 
+1. `void invalidValueHumidityScreen()`  
+Muestra en la pantalla LCD un mensaje de `INGRESE UN VALOR VALIDO`
+
+1. `void calibrateSoilSensor()`  
+Inicia la calibración del sensor de humedad del suelo, solicitando al usuario que coloque el sensor en el aire y en el agua y confirme entre cada acción para guardar los datos analógicos de cada muestra y los use de referencia para el máximo y mínimo de humedad y los guarda en la EEPROM
+
+1. `void toggleBacklightLCD()`  
+Cambia el estado del LED de la luz de fondo de la pantalla LCD y lo guarda en el booleano `backlightLCD` para saber si la pantalla esta encendida o no.
+
 1. `void startScreen()`  
 Imprime en pantalla el mensaje `INICIALIZANDO` y una cara sonriente.
 
@@ -268,10 +281,10 @@ Estos valores se imprimen para ver sus datos debido a que se guardan en la EEPRO
 #### 5. Comandos del numpad:
 
 Los comandos que se pueden ejecutar actualmente son:
-- [A] Ver el rango actual de humedad del suelo || Aceptar
-- [B] Modificar el rango de humedad del suelo
-- [C] PENDIENTE || Cancelar
-- [D] PENDIENTE
+- [A] Ver el rango actual de humedad || Aceptar
+- [B] Modificar el rango de humedad
+- [C] Calibración del sensor || Cancelar
+- [D] Apagar / encender la pantalla
 
 #### 6. Lanzamiento:
 
@@ -279,10 +292,18 @@ Para lanzar este programa solo tienes que tener el IDE de ARDUINO y las bibliote
 
 Procurar conectar los componentes al pin correspondiente en el código o caso contrario reemplazar el `#define` dentro del código por el pin que este usando.
 
+Los enlaces a los recursos para ejecutar el código son:  
+- [Arduino IDE](https://www.arduino.cc/en/software)
+- [New Liquid-Crystal](https://github.com/fmalpartida/New-LiquidCrystal)
+- [DHT Sensor Library](https://github.com/adafruit/DHT-sensor-library)
+- [Keypad](https://playground.arduino.cc/Code/Keypad/)
+- Wire.h (Incluida en el IDE)
+- EEPROM.h (Incluida en el IDE)
+
 #### 7. Actualizaciones pendientes:
 
 - [X] ~~Agregar num-pad 4x4~~
 - [X] ~~Agregar posibilidad de ver el rango actual.~~
-- [ ] Modificar el rango de humedad desde el num-pad.
-- [ ] Permitir calibración del sensor de humedad de suelo desde el num-pad.
-- [ ] Permitir desactivar o activar la luz de fondo de la LCD.
+- [X] ~~Modificar el rango de humedad desde el num-pad.~~
+- [X] ~~Permitir calibración del sensor de humedad de suelo desde el num-pad.~~
+- [X] ~~Permitir desactivar o activar la luz de fondo de la LCD.~~
