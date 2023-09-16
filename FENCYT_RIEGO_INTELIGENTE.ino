@@ -91,6 +91,7 @@ LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7);
 void setup()
 {
   dht.begin();
+  // Serial.begin(9600);
   // debuggingEEPROMData();
 
   pinMode(RELAY_PIN, OUTPUT);
@@ -130,7 +131,7 @@ void loop()
   optionSelector();
 
   watering();
-  debuggingSoilMoisture();
+  // debuggingSoilMoisture();
   delay(250);
 }
 
@@ -411,6 +412,8 @@ void setHumidityRange()
       EEPROM.put(12, maxHumidity);
       EEPROM.put(8, minHumidity);
 
+      wateringState = false;
+
       break;
     }
     else if (key == 'C')
@@ -671,8 +674,6 @@ void debuggingSoilMoisture()
  */
 void debuggingEEPROMData()
 {
-  Serial.begin(9600);
-
   Serial.println(EEPROM.length());
   Serial.println(airValue);
   Serial.println(waterValue);
