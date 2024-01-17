@@ -61,6 +61,16 @@ byte welcomeFace[] = {
     B01110,
     B00000};
 
+byte blockBar[] = {
+    B11111,
+    B11111,
+    B11111,
+    B11111,
+    B11111,
+    B11111,
+    B11111,
+    B00000};
+
 // Número de filas y columnas del numpad
 const byte ROWS = 4;
 const byte COLUMNS = 4;
@@ -104,6 +114,7 @@ void setup()
 
   lcd.createChar(0, celsiusGrades);
   lcd.createChar(1, welcomeFace);
+  lcd.createChar(2, blockBar);
 
   startScreen();
 }
@@ -582,7 +593,20 @@ void startScreen()
   lcd.setCursor(0, 0);
   lcd.print("INICIALIZANDO ");
   lcd.write((int8_t)1);
-  delay(2500);
+
+  lcd.setCursor(0, 1);
+  lcd.print("[");
+
+  lcd.setCursor(15, 1);
+  lcd.print("]");
+  for (int i = 1; i <= 14; i++)
+  {
+    lcd.setCursor(i, 1);
+    lcd.write((uint8_t)2);
+    delay(75);
+  }
+  delay(100);
+  lcd.clear();
 }
 
 /**
