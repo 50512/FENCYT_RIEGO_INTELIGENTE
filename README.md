@@ -307,3 +307,4 @@ Los enlaces a los recursos para ejecutar el código son:
 - [X] ~~Modificar el rango de humedad desde el num-pad.~~
 - [X] ~~Permitir calibración del sensor de humedad de suelo desde el num-pad.~~
 - [X] ~~Permitir desactivar o activar la luz de fondo de la LCD.~~
+- [ ] Refactorizar y optimizar el código para mejor legibilidad.
